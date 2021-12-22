@@ -126,7 +126,7 @@ class EMU2Sensor(Entity):
                     except:
                         continue
                                 
-                    if xmlTree.tag == 'InstantaneousDemand':
+                    if xmlTree.tag == 'InstantaneousDemand' and xmlTree.find('Demand').text != None:
                         demand = int(xmlTree.find('Demand').text, 16)
                         multiplier = int(xmlTree.find('Multiplier').text, 16)
                         divisor = int(xmlTree.find('Divisor').text, 16)
