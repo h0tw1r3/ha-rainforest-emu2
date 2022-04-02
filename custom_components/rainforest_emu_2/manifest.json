@@ -5,7 +5,7 @@
   "issue_tracker": "https://github.com/h0tw1r3/ha-rainforest-emu2/issues",
   "dependencies": [],
   "codeowners": ["@h0tw1r3"],
-  "requirements": [],
+  "requirements": ["pyserial"],
   "version": "0.2,1",
   "iot_class": "local_polling"
 }
