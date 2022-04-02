@@ -1,0 +1,6 @@
+{
+    "name": "Rainforest EMU2",
+    "render_readme": true,
+    "domains": "sensor",
+    "homeassistant": "2021.12.0"
+}

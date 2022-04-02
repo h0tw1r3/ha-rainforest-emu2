@@ -1,8 +1,11 @@
 {
-  "domain": "rainforest",
+  "domain": "rainforest_emu2",
   "name": "Rainforest EMU2",
-  "documentation": "https://github.com/h0tw1r3/ha-rainforest-emu2/blob/master/custom_components/rainforest_emu2/readme.md",
+  "documentation": "https://github.com/h0tw1r3/ha-rainforest-emu2/blob/main/README.md",
+  "issue_tracker": "https://github.com/h0tw1r3/ha-rainforest-emu2/issues",
   "dependencies": [],
   "codeowners": ["@h0tw1r3"],
-  "requirements": []
+  "requirements": [],
+  "version": "0.2,1",
+  "iot_class": "local_polling"
 }
