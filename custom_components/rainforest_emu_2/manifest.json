@@ -6,6 +6,14 @@
   "dependencies": [],
   "codeowners": ["@h0tw1r3"],
   "requirements": ["pyserial"],
-  "version": "0.2,1",
-  "iot_class": "local_polling"
+  "version": "0.2.4",
+  "iot_class": "local_push",
+  "usb": [
+      {
+          "vid": "04B4",
+          "pid": "0003",
+          "manufacturer": "Rainforest*",
+          "description": "* EMU-2"
+      }
+  ]
 }
