@@ -1,5 +1,7 @@
 # Rainforest Energy Monitoring Component
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+
 ## Overview
 To use your Rainforest Automation EMU-2™ Energy Monitoring Unit in Home Assistant follow the `Installation` and `Configuration` instructions.
 
