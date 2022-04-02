@@ -1,14 +1,14 @@
 {
-    "rainforest": {
+    "rainforest_emu2": {
         "version": "0.2.1",
-        "local_location":  "/custom_components/rainforest/sensor.py",
-        "remote_location": "https://raw.githubusercontent.com/jrhorrisberger/home-assistant/master/custom_components/rainforest/sensor.py",
-        "visit_repo":      "https://github.com/jrhorrisberger/home-assistant/tree/master/custom_components/rainforest",
-        "changelog":       "https://github.com/jrhorrisberger/home-assistant/tree/master/custom_components/rainforest",
+        "local_location":  "/custom_components/rainforest_emu2/sensor.py",
+        "remote_location": "https://raw.githubusercontent.com/h0tw1r3/ha-rainforest-emu2/master/custom_components/rainforest_emu2/sensor.py",
+        "visit_repo":      "https://github.com/h0tw1r3/ha-rainforest-emu2/tree/master/custom_components/rainforest_emu2",
+        "changelog":       "https://github.com/h0tw1r3/ha-rainforest-emu2/tree/master/custom_components/rainforest_emu2",
         "resources": [
-            "https://raw.githubusercontent.com/jrhorrisberger/home-assistant/master/custom_components/rainforest/__init__.py",
-            "https://raw.githubusercontent.com/jrhorrisberger/home-assistant/master/custom_components/rainforest/manifest.json",
-            "https://raw.githubusercontent.com/jrhorrisberger/home-assistant/master/custom_components/rainforest/sensor.py"
+            "https://raw.githubusercontent.com/h0tw1r3/ha-rainforest-emu2/master/custom_components/rainforest_emu2/__init__.py",
+            "https://raw.githubusercontent.com/h0tw1r3/ha-rainforest-emu2/master/custom_components/rainforest_emu2/manifest.json",
+            "https://raw.githubusercontent.com/h0tw1r3/ha-rainforest-emu2/master/custom_components/rainforest_emu2/sensor.py"
         ]
     }
 }

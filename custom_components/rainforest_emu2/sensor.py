@@ -1,7 +1,7 @@
 """
 Use serial protocol of EMU2 meter to obtain state of the connected meter.
 For more details about this component, please refer to the documentation
-at https://github.com/jrhorrisberger/home-assistant/blob/master/custom_components/rainforest/readme.md
+at https://github.com/h0tw1r3/ha-rainforest-emu2/blob/master/custom_components/rainforest/readme.md
 """
 
 from homeassistant.helpers.entity import Entity

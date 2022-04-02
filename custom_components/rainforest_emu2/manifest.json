@@ -1,0 +1,8 @@
+{
+  "domain": "rainforest",
+  "name": "Rainforest EMU2",
+  "documentation": "https://github.com/h0tw1r3/ha-rainforest-emu2/blob/master/custom_components/rainforest_emu2/readme.md",
+  "dependencies": [],
+  "codeowners": ["@h0tw1r3"],
+  "requirements": []
+}
