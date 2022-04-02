@@ -17,7 +17,7 @@ __version__ = '0.2.1'
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "rainforest"
+DOMAIN = "rainforest_emu_2"
 
 DEFAULT_NAME = "Rainforest Energy Monitoring Unit"
 CONF_PORT = 'port'
