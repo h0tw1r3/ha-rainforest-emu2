@@ -8,7 +8,7 @@ from homeassistant.helpers.entity import Entity
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
-    CONF_NAME, EVENT_HOMEASSISTANT_STOP)
+    CONF_NAME, CONF_PORT, EVENT_HOMEASSISTANT_STOP)
 import logging
 import voluptuous as vol
 from threading import Thread
@@ -20,7 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = "rainforest_emu_2"
 
 DEFAULT_NAME = "Rainforest Energy Monitoring Unit"
-CONF_PORT = 'port'
+DEFAULT_PORT = "/dev/ttyACM0"
 
 ATTR_DEVICE_MAC_ID = "Device MAC ID"
 ATTR_METER_MAC_ID = "Meter MAC ID"
@@ -32,7 +32,7 @@ ATTR_RECEIVED = "Received kWh"
 ATTR_CUSTOMPRICE = "Custom Price"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_PORT): cv.string,
+    vol.Required(CONF_PORT, default=DEFAULT_PORT): cv.string,
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
 })
 
