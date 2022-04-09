@@ -1,26 +1,29 @@
 """
 Use serial protocol of EMU2 meter to obtain state of the connected meter.
-For more details about this component, please refer to the documentation
-at https://github.com/h0tw1r3/ha-rainforest-emu2/blob/master/custom_components/rainforest/readme.md
 """
 
-from homeassistant.helpers.entity import Entity
-import homeassistant.helpers.config_validation as cv
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    CONF_NAME, CONF_PORT, EVENT_HOMEASSISTANT_STOP)
-import logging
-import voluptuous as vol
+    CONF_NAME,
+    CONF_PORT,
+    EVENT_HOMEASSISTANT_STOP
+)
+from homeassistant.core import HomeAssistant
+#from homeassistant.components.sensor import PLATFORM_SCHEMA
+#import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+#from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType, StateType
+
+#import logging
 from threading import Thread
 
-__version__ = '0.2.5'
+from .const import (
+    #DOMAIN,
+    LOGGER,
+)
 
-_LOGGER = logging.getLogger(__name__)
-
-DOMAIN = "rainforest_emu_2"
-
-DEFAULT_NAME = "Rainforest Energy Monitoring Unit"
-DEFAULT_PORT = "/dev/ttyACM0"
+__version__ = '0.5.0'
 
 ATTR_DEVICE_MAC_ID = "Device MAC ID"
 ATTR_METER_MAC_ID = "Meter MAC ID"
@@ -31,40 +34,38 @@ ATTR_DELIVERED = "Delivered kWh"
 ATTR_RECEIVED = "Received kWh"
 ATTR_CUSTOMPRICE = "Custom Price"
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_PORT, default=DEFAULT_PORT): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-})
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    _LOGGER.debug("Loading")
-    port = config.get(CONF_PORT)
-    sensor_name = config.get(CONF_NAME)
-
-    sensor = EMU2Sensor(sensor_name, port, hass)
+async def async_setup_entry(
+        hass: HomeAssistant,
+        config_entry: ConfigEntry,
+        async_add_entities: AddEntitiesCallback,
+) -> None:
+    LOGGER.debug("setup entry")
+    sensor = EMU2Sensor(hass, config_entry)
 
     hass.bus.async_listen_once(
         EVENT_HOMEASSISTANT_STOP, sensor.stop_serial_read())
 
     async_add_entities([sensor])
 
-class EMU2Sensor(Entity):
-    def __init__(self, sensor_name, port, hass):
-        _LOGGER.debug("Init")
+
+class EMU2Sensor(SensorEntity):
+    def __init__(self, hass, config_entry):
+        LOGGER.debug("Init")
         self._hass = hass
-        self._port = port
-        self._name = sensor_name
+        self._port = config_entry.data[CONF_PORT]
+        self._name = config_entry.data[CONF_NAME]
         self._baudrate = 115200
         self._timeout = 1
         self._icon = 'mdi:flash'
         self._unit_of_measurement = "kW"
-        
+
         self._serial_thread = None
         self._serial_thread_isEnabled = True
 
         self._state = None
 
-        self._data = {}                
+        self._data = {}
         self._data[ATTR_DEVICE_MAC_ID] = None
         self._data[ATTR_METER_MAC_ID] = None
         self._data[ATTR_TIER] = None
@@ -94,7 +95,7 @@ class EMU2Sensor(Entity):
             ATTR_RECEIVED: self._data.get(ATTR_RECEIVED),
             ATTR_CUSTOMPRICE: self._data.get(ATTR_CUSTOMPRICE),
         }
-        
+
     @property
     def icon(self):
         return self._icon
@@ -112,13 +113,12 @@ class EMU2Sensor(Entity):
         return self._unit_of_measurement
 
     async def async_added_to_hass(self):
-        _LOGGER.debug("Thread Start")
+        LOGGER.debug("Thread Start")
         self._serial_thread = Thread(target = self.serial_read, args = (self._port, self._baudrate, self._timeout))
         self._serial_thread.start()
 
     def serial_read(self, portIN, baudrateIN, timeoutIN, **kwargs):
-        
-        _LOGGER.debug("Thread Starting")
+        LOGGER.debug("Thread Starting")
         import serial, time
         import xml.etree.ElementTree as xmlDecoder
 
@@ -127,22 +127,21 @@ class EMU2Sensor(Entity):
             try:
                 reader = serial.Serial(portIN, baudrateIN, timeout=timeoutIN)
             except:
-                _LOGGER.error("Failed to open %s. Retrying in 5s...", portIN)
+                LOGGER.error("Failed to open %s. Retrying in 5s...", portIN)
                 time.sleep(5.0)
 
-        
-        _LOGGER.debug("Begining Loop")
+        LOGGER.debug("Begining Loop")
         while self._serial_thread_isEnabled:
             if (reader.in_waiting > 0):
-                #_LOGGER.debug("Data RX")
+                #LOGGER.debug("Data RX")
                 msgStr = reader.read(reader.in_waiting).decode()
 
-                if msgStr != [] and msgStr[0] == '<':
+                if len(msgStr) > 0 and msgStr[0] == '<':
                     try:
                         xmlTree = xmlDecoder.fromstring(msgStr)
                     except:
                         continue
-                                
+
                     if xmlTree.tag == 'InstantaneousDemand' and xmlTree.find('Demand').text != None:
                         demand = int(xmlTree.find('Demand').text, 16)
                         demand = -(demand & 0x80000000) | (demand & 0x7fffffff)
@@ -157,21 +156,21 @@ class EMU2Sensor(Entity):
                         self._data[ATTR_METER_MAC_ID] = xmlTree.find('MeterMacId').text
 
                         self.async_schedule_update_ha_state()
-                        
-                        _LOGGER.debug("InstantaneousDemand: %s", self._state)
-                        
+
+                        LOGGER.debug("InstantaneousDemand: %s", self._state)
+
                         custom_price = self._hass.states.get('input_number.rainforest_tariff_custom_rate')
                         if custom_price is not None:
                             self._data[ATTR_CUSTOMPRICE] = custom_price.state
-                        
+
                         if self._data[ATTR_CUSTOMPRICE] is not None:
                             self._data[ATTR_PRICE] = self._data[ATTR_CUSTOMPRICE]
                             priceHex = hex(int(round(float(self._data[ATTR_CUSTOMPRICE]))))
-                            
+
                             setPriceCommand='<Command><Name>set_current_price</Name><Price>'+priceHex+'</Price><TrailingDigits>0x05</TrailingDigits></Command>'
-                            _LOGGER.debug ('setPriceCommand: %s', setPriceCommand)
+                            LOGGER.debug ('setPriceCommand: %s', setPriceCommand)
                             commandResult = reader.write (str.encode(setPriceCommand))
-                            _LOGGER.debug ('commandResult: %s', commandResult)
+                            LOGGER.debug ('commandResult: %s', commandResult)
 
                     elif xmlTree.tag == 'PriceCluster':
                         priceRaw = int(xmlTree.find('Price').text, 16)
@@ -179,20 +178,20 @@ class EMU2Sensor(Entity):
                         self._data[ATTR_PRICE] = priceRaw / pow(10, trailingDigits)
 
                         self._data[ATTR_TIER] = int(xmlTree.find('Tier').text, 16)
-                        
-                        _LOGGER.debug("PriceCluster: %s", self._data[ATTR_PRICE])
+
+                        LOGGER.debug("PriceCluster: %s", self._data[ATTR_PRICE])
                     elif xmlTree.tag == 'CurrentSummationDelivered':
-                        
+
                         delivered = int(xmlTree.find('SummationDelivered').text, 16)
                         delivered *= int(xmlTree.find('Multiplier').text, 16)
                         delivered /= int(xmlTree.find('Divisor').text, 16)
                         self._data[ATTR_DELIVERED] = delivered
-                        
+
                         received = int(xmlTree.find('SummationReceived').text, 16)
                         received *= int(xmlTree.find('Multiplier').text, 16)
                         received /= int(xmlTree.find('Divisor').text, 16)
                         self._data[ATTR_RECEIVED] = received
-                        
+
                         energy = int(xmlTree.find('SummationDelivered').text, 16)
                         energy -= int(xmlTree.find('SummationReceived').text, 16)
                         energy *= int(xmlTree.find('Multiplier').text, 16)

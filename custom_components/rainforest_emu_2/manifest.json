@@ -1,10 +1,11 @@
 {
   "domain": "rainforest_emu_2",
-  "name": "Rainforest EMU2",
+  "name": "Rainforest EMU-2",
   "documentation": "https://github.com/h0tw1r3/ha-rainforest-emu2/blob/main/README.md",
   "issue_tracker": "https://github.com/h0tw1r3/ha-rainforest-emu2/issues",
   "dependencies": [],
   "codeowners": ["@h0tw1r3"],
+  "config_flow": true,
   "requirements": ["pyserial"],
   "version": "0.2.5",
   "iot_class": "local_push",
